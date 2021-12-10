@@ -4,6 +4,10 @@ const AVAILABLE_POOLS = [
     "SLP-WETH"
 ]
 
+const AVAILABLE_TOKEN = [
+    "AXS", "SLP", "WETH", "AXS-WETH", "SLP-WETH", "WRON", "RON"
+]
+
 /**
  * Normalizes an address for use in APIs
  */
@@ -18,6 +22,24 @@ function getPriceData() {
     const response = UrlFetchApp.fetch(`https://api.axie.uno/prices`);
     const data = JSON.parse(response.getContentText());
     return {AXS: data["axie-infinity"].usd, SLP: data["smooth-love-potion"].usd};
+}
+
+/**
+ * Load balance for given address and token
+ *
+ * @param {string} player The players ronin address
+ * @param {string} token The token to query. Must be AXS, SLP, WETH, AXS-WETH, SLP-WETH, WRON or RON
+ * @return Staking Pools
+ * @customfunction
+ */
+function getBalance(player, token) {
+    if (AVAILABLE_TOKEN.includes(token) === false) {
+        throw new Error(`Invalid Token: ${token} - Valid token include: ${AVAILABLE_TOKEN.join(",")}`);
+    }
+
+    const response = UrlFetchApp.fetch(`https://api.axie.uno/balance?token=${token}&player=${normalizeAddress(player)}`);
+    const data = JSON.parse(response.getContentText());
+    return data.balance;
 }
 
 /**
