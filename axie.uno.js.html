@@ -44,6 +44,113 @@ function normalizeAddress(address) {
 }
 
 /**
+ * Returns reward infos for a player and a staking pool
+ */
+function getRewardInfo(player, pool) {
+    if (AVAILABLE_POOLS.includes(pool) === false) {
+        throw new Error(`Invalid Pool: ${pool} - Valid pools include: ${AVAILABLE_POOLS.join(",")}`);
+    }
+
+    const response = UrlFetchApp.fetch(`https://api.axie.uno/userInfo?pool=${pool}&amp;player=${normalizeAddress(player)}`);
+    return JSON.parse(response.getContentText());
+}
+
+/**
+ * Formats seconds into HH:MM:SS format
+ */
+function formatSeconds(seconds) {
+    let sec_num = parseInt(seconds, 10)
+    let hours = Math.floor(sec_num / 3600)
+    let minutes = Math.floor(sec_num / 60) % 60
+    seconds = sec_num % 60
+
+    return [hours, minutes, seconds]
+        .map(v => v &lt; 10 ? "0" + v : v)
+        .filter((v, i) => v !== "00" || i > 0)
+        .join(":")
+}
+
+/**
+ * Total credited rewards for a player and pool
+ *
+ * @param {string} player The players ronin address
+ * @param {string} pool The staking pool to check. Must be AXS, AXS-WETH or SLP-WETH
+ * @return Total credited rewards for a player and pool
+ * @customfunction
+ */
+function getTotalRewardsCredited(player, pool) {
+    const rewardInfo = getRewardInfo(player, pool);
+    return parseFloat(rewardInfo.totalRewardsCredited)
+}
+
+/**
+ * Total debited rewards for a player and pool
+ *
+ * @param {string} player The players ronin address
+ * @param {string} pool The staking pool to check. Must be AXS, AXS-WETH or SLP-WETH
+ * @return Total debited rewards for a player and pool
+ * @customfunction
+ */
+function getTotalRewardsDebited(player, pool) {
+    const rewardInfo = getRewardInfo(player, pool);
+    return parseFloat(rewardInfo.totalRewardsDebited)
+}
+
+/**
+ * Returns seconds since the last claim for a player and a pool
+ *
+ * @param {string} player The players ronin address
+ * @param {string} pool The staking pool to check. Must be AXS, AXS-WETH or SLP-WETH
+ * @param {boolean} formatted If true return value will be in this format: HH:MM:SS
+ * @return Seconds since last claim
+ * @customfunction
+ */
+function getSecondsSinceLastClaim(player, pool, formatted = false) {
+    const rewardInfo = getRewardInfo(player, pool);
+    return formatted ? formatSeconds(rewardInfo.secondsSinceLastClaim) : rewardInfo.secondsSinceLastClaim
+}
+
+/**
+ * Returns seconds until the next claim for a player and a pool
+ *
+ * @param {string} player The players ronin address
+ * @param {string} pool The staking pool to check. Must be AXS, AXS-WETH or SLP-WETH
+ * @param {boolean} formatted If true return value will be in this format: HH:MM:SS
+ * @return Seconds until next claim
+ * @customfunction
+ */
+function getSecondsUntilNextClaim(player, pool, formatted = false) {
+    const rewardInfo = getRewardInfo(player, pool);
+    return formatted ? formatSeconds(rewardInfo.secondsUntilNextClaim) : rewardInfo.secondsUntilNextClaim
+}
+
+/**
+ * Returns the timestamp for the next claim by a player for a pool
+ *
+ * @param {string} player The players ronin address
+ * @param {string} pool The staking pool to check. Must be AXS, AXS-WETH or SLP-WETH
+ * @return Next Claim Date
+ * @customfunction
+ */
+function getNextClaimTimestamp(player, pool) {
+    const rewardInfo = getRewardInfo(player, pool);
+    return new Date(parseInt(rewardInfo.nextClaimTimestamp) * 1000);
+}
+
+/**
+ * Returns the timestamp for the latest claim by a player for a pool
+ *
+ * @param {string} player The players ronin address
+ * @param {string} pool The staking pool to check. Must be AXS, AXS-WETH or SLP-WETH
+ * @return Last Claim Date
+ * @customfunction
+ */
+function getLastClaimTimestamp(player, pool) {
+    const rewardInfo = getRewardInfo(player, pool);
+    return new Date(parseInt(rewardInfo.lastClaimTimestamp) * 1000);
+}
+
+/**
  * Return and parses current token prices
  */
 function getPriceData() {
@@ -286,13 +393,13 @@ function getSLPUSDValue(stake) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#estimateDailyRewards">estimateDailyRewards</a></li><li><a href="global.html#estimateMyDailyRewards">estimateMyDailyRewards</a></li><li><a href="global.html#getAXSPrice">getAXSPrice</a></li><li><a href="global.html#getAXSUSDValue">getAXSUSDValue</a></li><li><a href="global.html#getBalance">getBalance</a></li><li><a href="global.html#getMyStake">getMyStake</a></li><li><a href="global.html#getPool">getPool</a></li><li><a href="global.html#getPoolData">getPoolData</a></li><li><a href="global.html#getPriceData">getPriceData</a></li><li><a href="global.html#getRewardPending">getRewardPending</a></li><li><a href="global.html#getRewardPool">getRewardPool</a></li><li><a href="global.html#getRewardTokenAddress">getRewardTokenAddress</a></li><li><a href="global.html#getRewardTokenName">getRewardTokenName</a></li><li><a href="global.html#getRewardTokenSymbol">getRewardTokenSymbol</a></li><li><a href="global.html#getSLPPrice">getSLPPrice</a></li><li><a href="global.html#getSLPUSDValue">getSLPUSDValue</a></li><li><a href="global.html#getStakingTokenAddress">getStakingTokenAddress</a></li><li><a href="global.html#getStakingTokenName">getStakingTokenName</a></li><li><a href="global.html#getStakingTokenSymbol">getStakingTokenSymbol</a></li><li><a href="global.html#getTotalStake">getTotalStake</a></li><li><a href="global.html#normalizeAddress">normalizeAddress</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#estimateDailyRewards">estimateDailyRewards</a></li><li><a href="global.html#estimateMyDailyRewards">estimateMyDailyRewards</a></li><li><a href="global.html#formatSeconds">formatSeconds</a></li><li><a href="global.html#getAXSPrice">getAXSPrice</a></li><li><a href="global.html#getAXSUSDValue">getAXSUSDValue</a></li><li><a href="global.html#getBalance">getBalance</a></li><li><a href="global.html#getLastClaimTimestamp">getLastClaimTimestamp</a></li><li><a href="global.html#getMyStake">getMyStake</a></li><li><a href="global.html#getNextClaimTimestamp">getNextClaimTimestamp</a></li><li><a href="global.html#getPool">getPool</a></li><li><a href="global.html#getPoolData">getPoolData</a></li><li><a href="global.html#getPriceData">getPriceData</a></li><li><a href="global.html#getRewardInfo">getRewardInfo</a></li><li><a href="global.html#getRewardPending">getRewardPending</a></li><li><a href="global.html#getRewardPool">getRewardPool</a></li><li><a href="global.html#getRewardTokenAddress">getRewardTokenAddress</a></li><li><a href="global.html#getRewardTokenName">getRewardTokenName</a></li><li><a href="global.html#getRewardTokenSymbol">getRewardTokenSymbol</a></li><li><a href="global.html#getSecondsSinceLastClaim">getSecondsSinceLastClaim</a></li><li><a href="global.html#getSecondsUntilNextClaim">getSecondsUntilNextClaim</a></li><li><a href="global.html#getSLPPrice">getSLPPrice</a></li><li><a href="global.html#getSLPUSDValue">getSLPUSDValue</a></li><li><a href="global.html#getStakingTokenAddress">getStakingTokenAddress</a></li><li><a href="global.html#getStakingTokenName">getStakingTokenName</a></li><li><a href="global.html#getStakingTokenSymbol">getStakingTokenSymbol</a></li><li><a href="global.html#getTotalRewardsCredited">getTotalRewardsCredited</a></li><li><a href="global.html#getTotalRewardsDebited">getTotalRewardsDebited</a></li><li><a href="global.html#getTotalStake">getTotalStake</a></li><li><a href="global.html#normalizeAddress">normalizeAddress</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Dec 10 2021 08:26:13 GMT+0100 (Mitteleuropäische Normalzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Sun Dec 12 2021 10:19:41 GMT+0100 (Mitteleuropäische Normalzeit)
 </footer>
 
 <script> prettyPrint(); </script>
