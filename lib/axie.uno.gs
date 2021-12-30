@@ -19,26 +19,24 @@ function normalizeAddress(address) {
  * Returns reward infos for a player and a staking pool
  */
 function getRewardInfo(player, pool) {
-    if (AVAILABLE_POOLS.includes(pool) === false) {
+  if (AVAILABLE_POOLS.includes(pool) === false) {
         throw new Error(`Invalid Pool: ${pool} - Valid pools include: ${AVAILABLE_POOLS.join(",")}`);
     }
 
     const response = UrlFetchApp.fetch(`https://api.axie.uno/userInfo?pool=${pool}&player=${normalizeAddress(player)}`);
-    return JSON.parse(response.getContentText());
+    const data = JSON.parse(response.getContentText());
+    return data;
 }
 
-/**
- * Formats seconds into HH:MM:SS format
- */
-function formatSeconds(seconds) {
-    let sec_num = parseInt(seconds, 10)
-    let hours = Math.floor(sec_num / 3600)
-    let minutes = Math.floor(sec_num / 60) % 60
-    seconds = sec_num % 60
+function formatSeconds(seconds)  {
+    var sec_num = parseInt(seconds, 10)
+    var hours   = Math.floor(sec_num / 3600)
+    var minutes = Math.floor(sec_num / 60) % 60
+    var seconds = sec_num % 60
 
-    return [hours, minutes, seconds]
+    return [hours,minutes,seconds]
         .map(v => v < 10 ? "0" + v : v)
-        .filter((v, i) => v !== "00" || i > 0)
+        .filter((v,i) => v !== "00" || i > 0)
         .join(":")
 }
 
@@ -51,8 +49,8 @@ function formatSeconds(seconds) {
  * @customfunction
  */
 function getTotalRewardsCredited(player, pool) {
-    const rewardInfo = getRewardInfo(player, pool);
-    return parseFloat(rewardInfo.totalRewardsCredited)
+  const rewardInfo = getRewardInfo(player, pool);
+  return parseFloat(rewardInfo.totalRewardsCredited)
 }
 
 /**
@@ -65,7 +63,7 @@ function getTotalRewardsCredited(player, pool) {
  */
 function getTotalRewardsDebited(player, pool) {
     const rewardInfo = getRewardInfo(player, pool);
-    return parseFloat(rewardInfo.totalRewardsDebited)
+  return parseFloat(rewardInfo.totalRewardsDebited)
 }
 
 /**
@@ -73,13 +71,13 @@ function getTotalRewardsDebited(player, pool) {
  *
  * @param {string} player The players ronin address
  * @param {string} pool The staking pool to check. Must be AXS, AXS-WETH or SLP-WETH
- * @param {boolean} formatted If true return value will be in this format: HH:MM:SS
+ * @param {boolean} formated If true return value will be in this format: HH:MM:SS
  * @return Seconds since last claim
  * @customfunction
  */
-function getSecondsSinceLastClaim(player, pool, formatted = false) {
+function getSecondsSinceLastClaim(player, pool, formated = false) {
     const rewardInfo = getRewardInfo(player, pool);
-    return formatted ? formatSeconds(rewardInfo.secondsSinceLastClaim) : rewardInfo.secondsSinceLastClaim
+    return formated ?  formatSeconds(rewardInfo.secondsSinceLastClaim)  : rewardInfo.secondsSinceLastClaim
 }
 
 /**
@@ -87,13 +85,13 @@ function getSecondsSinceLastClaim(player, pool, formatted = false) {
  *
  * @param {string} player The players ronin address
  * @param {string} pool The staking pool to check. Must be AXS, AXS-WETH or SLP-WETH
- * @param {boolean} formatted If true return value will be in this format: HH:MM:SS
+ * @param {boolean} formated If true return value will be in this format: HH:MM:SS
  * @return Seconds until next claim
  * @customfunction
  */
-function getSecondsUntilNextClaim(player, pool, formatted = false) {
-    const rewardInfo = getRewardInfo(player, pool);
-    return formatted ? formatSeconds(rewardInfo.secondsUntilNextClaim) : rewardInfo.secondsUntilNextClaim
+function getSecondsUntilNextClaim(player, pool, formated = false) {
+  const rewardInfo = getRewardInfo(player, pool);
+    return formated ? formatSeconds(rewardInfo.secondsUntilNextClaim) : rewardInfo.secondsUntilNextClaim
 }
 
 /**
@@ -101,12 +99,12 @@ function getSecondsUntilNextClaim(player, pool, formatted = false) {
  *
  * @param {string} player The players ronin address
  * @param {string} pool The staking pool to check. Must be AXS, AXS-WETH or SLP-WETH
- * @return Next Claim Date
+ * @return {date} Next Claim Date
  * @customfunction
  */
 function getNextClaimTimestamp(player, pool) {
-    const rewardInfo = getRewardInfo(player, pool);
-    return new Date(parseInt(rewardInfo.nextClaimTimestamp) * 1000);
+  const rewardInfo = getRewardInfo(player, pool);
+  return new Date(parseInt(rewardInfo.nextClaimTimestamp) * 1000);
 }
 
 /**
@@ -114,13 +112,15 @@ function getNextClaimTimestamp(player, pool) {
  *
  * @param {string} player The players ronin address
  * @param {string} pool The staking pool to check. Must be AXS, AXS-WETH or SLP-WETH
- * @return Last Claim Date
+ * @return {date} Last Claim Date
  * @customfunction
  */
 function getLastClaimTimestamp(player, pool) {
-    const rewardInfo = getRewardInfo(player, pool);
-    return new Date(parseInt(rewardInfo.lastClaimTimestamp) * 1000);
+  const rewardInfo = getRewardInfo(player, pool);
+  return new Date(parseInt(rewardInfo.lastClaimTimestamp) * 1000);
 }
+
+
 
 /**
  * Return and parses current token prices
@@ -354,4 +354,15 @@ function getAXSUSDValue(stake) {
  */
 function getSLPUSDValue(stake) {
     return stake * getSLPPrice();
+}
+
+/**
+ * Returns the reward token estimated APR
+ * @param {string} pool The staking pool to check. Must be AXS, AXS-WETH or SLP-WETH
+ * @return APR
+ * @customfunction
+ */
+function getEstimatedAPR(pool) {
+    const data = getPool("0x0000000000000000000000000000000000000000", pool);
+    return data.apr;
 }
