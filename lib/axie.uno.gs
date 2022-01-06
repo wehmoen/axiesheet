@@ -8,6 +8,70 @@ const AVAILABLE_TOKEN = [
     "AXS", "SLP", "WETH", "AXS-WETH", "SLP-WETH", "WRON", "RON"
 ]
 
+const SUPPORTED_CURRENCIES = [
+    "btc",
+    "eth",
+    "ltc",
+    "bch",
+    "bnb",
+    "eos",
+    "xrp",
+    "xlm",
+    "link",
+    "dot",
+    "yfi",
+    "usd",
+    "aed",
+    "ars",
+    "aud",
+    "bdt",
+    "bhd",
+    "bmd",
+    "brl",
+    "cad",
+    "chf",
+    "clp",
+    "cny",
+    "czk",
+    "dkk",
+    "eur",
+    "gbp",
+    "hkd",
+    "huf",
+    "idr",
+    "ils",
+    "inr",
+    "jpy",
+    "krw",
+    "kwd",
+    "lkr",
+    "mmk",
+    "mxn",
+    "myr",
+    "ngn",
+    "nok",
+    "nzd",
+    "php",
+    "pkr",
+    "pln",
+    "rub",
+    "sar",
+    "sek",
+    "sgd",
+    "thb",
+    "try",
+    "twd",
+    "uah",
+    "vef",
+    "vnd",
+    "zar",
+    "xdr",
+    "xag",
+    "xau",
+    "bits",
+    "sats"
+];
+
 /**
  * Normalizes an address for use in APIs
  */
@@ -125,10 +189,10 @@ function getLastClaimTimestamp(player, pool) {
 /**
  * Return and parses current token prices
  */
-function getPriceData() {
-    const response = UrlFetchApp.fetch(`https://api.axie.uno/prices`);
+function getPriceData(currency = "usd") {
+    const response = UrlFetchApp.fetch(`https://api.axie.uno/prices?currency=${currency.toLowerCase()}`);
     const data = JSON.parse(response.getContentText());
-    return {AXS: data["axie-infinity"].usd, SLP: data["smooth-love-potion"].usd};
+    return {AXS: data["axie-infinity"][currency], SLP: data["smooth-love-potion"][currency]};
 }
 
 /**
@@ -318,21 +382,23 @@ function getStakingTokenSymbol(pool) {
 
 /**
  * Returns the current AXS / USD price
+ * @param {string} currency The currency to check. Defaults to usd. Must be supported by CoinGecko
  * @return USD Price
  * @customfunction
  */
-function getAXSPrice() {
-    const priceData = getPriceData();
+function getAXSPrice(currency = "usd") {
+    const priceData = getPriceData(currency);
     return priceData.AXS;
 }
 
 /**
  * Returns the current SLP / USD price
+ * @param {string} currency The currency to check. Defaults to usd. Must be supported by CoinGecko
  * @return USD Price
  * @customfunction
  */
-function getSLPPrice() {
-    const priceData = getPriceData();
+function getSLPPrice(currency = "usd") {
+    const priceData = getPriceData(currency);
     return priceData.SLP;
 }
 
