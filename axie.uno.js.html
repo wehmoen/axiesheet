@@ -220,7 +220,7 @@ function getLastClaimTimestamp(player, pool) {
 function getPriceData(currency = "usd") {
     const response = UrlFetchApp.fetch(`https://api.axie.uno/prices?currency=${currency.toLowerCase()}`);
     const data = JSON.parse(response.getContentText());
-    return {AXS: data["axie-infinity"][currency], SLP: data["smooth-love-potion"][currency]};
+    return {AXS: data["axie-infinity"][currency], SLP: data["smooth-love-potion"][currency], RON: data["ron"].usd};
 }
 
 /**
@@ -420,6 +420,17 @@ function getAXSPrice(currency = "usd") {
 }
 
 /**
+ * Returns the current RON / USD price. Based on bitforex.com! Will be switched to coingecko once available
+ * @return USD Price
+ * @customfunction
+ */
+function getRONUSDPrice() {
+    const priceData = getPriceData();
+    return priceData.RON;
+}
+
+
+/**
  * Returns the current SLP / USD price
  * @param {string} currency The currency to check. Defaults to usd. Must be supported by CoinGecko
  * @return USD Price
@@ -470,13 +481,13 @@ function getEstimatedAPR(pool) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="index.html#estimateDailyRewards">estimateDailyRewards</a></li><li><a href="index.html#estimateMyDailyRewards">estimateMyDailyRewards</a></li><li><a href="index.html#getAXSPrice">getAXSPrice</a></li><li><a href="index.html#getAXSUSDValue">getAXSUSDValue</a></li><li><a href="index.html#getBalance">getBalance</a></li><li><a href="index.html#getEstimatedAPR">getEstimatedAPR</a></li><li><a href="index.html#getLastClaimTimestamp">getLastClaimTimestamp</a></li><li><a href="index.html#getMyStake">getMyStake</a></li><li><a href="index.html#getNextClaimTimestamp">getNextClaimTimestamp</a></li><li><a href="index.html#getPool">getPool</a></li><li><a href="index.html#getPoolData">getPoolData</a></li><li><a href="index.html#getPriceData">getPriceData</a></li><li><a href="index.html#getRewardInfo">getRewardInfo</a></li><li><a href="index.html#getRewardPending">getRewardPending</a></li><li><a href="index.html#getRewardPool">getRewardPool</a></li><li><a href="index.html#getRewardTokenAddress">getRewardTokenAddress</a></li><li><a href="index.html#getRewardTokenName">getRewardTokenName</a></li><li><a href="index.html#getRewardTokenSymbol">getRewardTokenSymbol</a></li><li><a href="index.html#getSecondsSinceLastClaim">getSecondsSinceLastClaim</a></li><li><a href="index.html#getSecondsUntilNextClaim">getSecondsUntilNextClaim</a></li><li><a href="index.html#getSLPPrice">getSLPPrice</a></li><li><a href="index.html#getSLPUSDValue">getSLPUSDValue</a></li><li><a href="index.html#getStakingTokenAddress">getStakingTokenAddress</a></li><li><a href="index.html#getStakingTokenName">getStakingTokenName</a></li><li><a href="index.html#getStakingTokenSymbol">getStakingTokenSymbol</a></li><li><a href="index.html#getTotalRewardsCredited">getTotalRewardsCredited</a></li><li><a href="index.html#getTotalRewardsDebited">getTotalRewardsDebited</a></li><li><a href="index.html#getTotalStake">getTotalStake</a></li><li><a href="index.html#normalizeAddress">normalizeAddress</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="index.html#estimateDailyRewards">estimateDailyRewards</a></li><li><a href="index.html#estimateMyDailyRewards">estimateMyDailyRewards</a></li><li><a href="index.html#getAXSPrice">getAXSPrice</a></li><li><a href="index.html#getAXSUSDValue">getAXSUSDValue</a></li><li><a href="index.html#getBalance">getBalance</a></li><li><a href="index.html#getEstimatedAPR">getEstimatedAPR</a></li><li><a href="index.html#getLastClaimTimestamp">getLastClaimTimestamp</a></li><li><a href="index.html#getMyStake">getMyStake</a></li><li><a href="index.html#getNextClaimTimestamp">getNextClaimTimestamp</a></li><li><a href="index.html#getPool">getPool</a></li><li><a href="index.html#getPoolData">getPoolData</a></li><li><a href="index.html#getPriceData">getPriceData</a></li><li><a href="index.html#getRewardInfo">getRewardInfo</a></li><li><a href="index.html#getRewardPending">getRewardPending</a></li><li><a href="index.html#getRewardPool">getRewardPool</a></li><li><a href="index.html#getRewardTokenAddress">getRewardTokenAddress</a></li><li><a href="index.html#getRewardTokenName">getRewardTokenName</a></li><li><a href="index.html#getRewardTokenSymbol">getRewardTokenSymbol</a></li><li><a href="index.html#getRONUSDPrice">getRONUSDPrice</a></li><li><a href="index.html#getSecondsSinceLastClaim">getSecondsSinceLastClaim</a></li><li><a href="index.html#getSecondsUntilNextClaim">getSecondsUntilNextClaim</a></li><li><a href="index.html#getSLPPrice">getSLPPrice</a></li><li><a href="index.html#getSLPUSDValue">getSLPUSDValue</a></li><li><a href="index.html#getStakingTokenAddress">getStakingTokenAddress</a></li><li><a href="index.html#getStakingTokenName">getStakingTokenName</a></li><li><a href="index.html#getStakingTokenSymbol">getStakingTokenSymbol</a></li><li><a href="index.html#getTotalRewardsCredited">getTotalRewardsCredited</a></li><li><a href="index.html#getTotalRewardsDebited">getTotalRewardsDebited</a></li><li><a href="index.html#getTotalStake">getTotalStake</a></li><li><a href="index.html#normalizeAddress">normalizeAddress</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Thu Jan 06 2022 09:41:25 GMT+0100 (Mitteleuropäische Normalzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Jan 07 2022 02:52:28 GMT+0100 (Mitteleuropäische Normalzeit)
 </footer>
 
 <script> prettyPrint(); </script>

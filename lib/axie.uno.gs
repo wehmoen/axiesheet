@@ -192,7 +192,7 @@ function getLastClaimTimestamp(player, pool) {
 function getPriceData(currency = "usd") {
     const response = UrlFetchApp.fetch(`https://api.axie.uno/prices?currency=${currency.toLowerCase()}`);
     const data = JSON.parse(response.getContentText());
-    return {AXS: data["axie-infinity"][currency], SLP: data["smooth-love-potion"][currency]};
+    return {AXS: data["axie-infinity"][currency], SLP: data["smooth-love-potion"][currency], RON: data["ron"].usd};
 }
 
 /**
@@ -390,6 +390,17 @@ function getAXSPrice(currency = "usd") {
     const priceData = getPriceData(currency);
     return priceData.AXS;
 }
+
+/**
+ * Returns the current RON / USD price. Based on bitforex.com! Will be switched to coingecko once available
+ * @return USD Price
+ * @customfunction
+ */
+function getRONUSDPrice() {
+    const priceData = getPriceData();
+    return priceData.RON;
+}
+
 
 /**
  * Returns the current SLP / USD price
