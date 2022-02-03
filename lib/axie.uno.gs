@@ -6,7 +6,7 @@ const AVAILABLE_POOLS = [
 ]
 
 const AVAILABLE_TOKEN = [
-    "AXS", "SLP", "WETH", "AXS-WETH", "SLP-WETH", "WRON", "RON","RON-WETH"
+    "AXS", "SLP", "WETH", "AXS-WETH", "SLP-WETH", "WRON", "RON","RON-WETH", "RONIN"
 ]
 
 const SUPPORTED_CURRENCIES = [
