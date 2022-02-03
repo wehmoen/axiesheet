@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Axie Sheet</title>
+    <title>JSDoc: Source: axie.uno.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -29,11 +29,12 @@
             <pre class="prettyprint source linenums"><code>const AVAILABLE_POOLS = [
     "AXS",
     "AXS-WETH",
-    "SLP-WETH"
+    "SLP-WETH",
+    "RON-WETH"
 ]
 
 const AVAILABLE_TOKEN = [
-    "AXS", "SLP", "WETH", "AXS-WETH", "SLP-WETH", "WRON", "RON"
+    "AXS", "SLP", "WETH", "AXS-WETH", "SLP-WETH", "WRON", "RON","RON-WETH"
 ]
 
 const SUPPORTED_CURRENCIES = [
@@ -111,7 +112,7 @@ function normalizeAddress(address) {
  * Returns reward infos for a player and a staking pool
  */
 function getRewardInfo(player, pool) {
-  if (AVAILABLE_POOLS.includes(pool) === false) {
+    if (AVAILABLE_POOLS.includes(pool) === false) {
         throw new Error(`Invalid Pool: ${pool} - Valid pools include: ${AVAILABLE_POOLS.join(",")}`);
     }
 
@@ -141,8 +142,8 @@ function formatSeconds(seconds)  {
  * @customfunction
  */
 function getTotalRewardsCredited(player, pool) {
-  const rewardInfo = getRewardInfo(player, pool);
-  return parseFloat(rewardInfo.totalRewardsCredited)
+    const rewardInfo = getRewardInfo(player, pool);
+    return parseFloat(rewardInfo.totalRewardsCredited)
 }
 
 /**
@@ -155,7 +156,7 @@ function getTotalRewardsCredited(player, pool) {
  */
 function getTotalRewardsDebited(player, pool) {
     const rewardInfo = getRewardInfo(player, pool);
-  return parseFloat(rewardInfo.totalRewardsDebited)
+    return parseFloat(rewardInfo.totalRewardsDebited)
 }
 
 /**
@@ -182,7 +183,7 @@ function getSecondsSinceLastClaim(player, pool, formated = false) {
  * @customfunction
  */
 function getSecondsUntilNextClaim(player, pool, formated = false) {
-  const rewardInfo = getRewardInfo(player, pool);
+    const rewardInfo = getRewardInfo(player, pool);
     return formated ? formatSeconds(rewardInfo.secondsUntilNextClaim) : rewardInfo.secondsUntilNextClaim
 }
 
@@ -195,8 +196,8 @@ function getSecondsUntilNextClaim(player, pool, formated = false) {
  * @customfunction
  */
 function getNextClaimTimestamp(player, pool) {
-  const rewardInfo = getRewardInfo(player, pool);
-  return new Date(parseInt(rewardInfo.nextClaimTimestamp) * 1000);
+    const rewardInfo = getRewardInfo(player, pool);
+    return new Date(parseInt(rewardInfo.nextClaimTimestamp) * 1000);
 }
 
 /**
@@ -208,8 +209,8 @@ function getNextClaimTimestamp(player, pool) {
  * @customfunction
  */
 function getLastClaimTimestamp(player, pool) {
-  const rewardInfo = getRewardInfo(player, pool);
-  return new Date(parseInt(rewardInfo.lastClaimTimestamp) * 1000);
+    const rewardInfo = getRewardInfo(player, pool);
+    return new Date(parseInt(rewardInfo.lastClaimTimestamp) * 1000);
 }
 
 
@@ -228,7 +229,7 @@ function getPriceData(currency = "usd") {
  *
  * @param {string} player The players ronin address
  * @param {string} token The token to query. Must be AXS, SLP, WETH, AXS-WETH, SLP-WETH, WRON or RON
- * @return Staking Pools
+ * @return Token Balance
  * @customfunction
  */
 function getBalance(player, token) {
@@ -236,9 +237,9 @@ function getBalance(player, token) {
         throw new Error(`Invalid Token: ${token} - Valid token include: ${AVAILABLE_TOKEN.join(",")}`);
     }
 
-    const response = UrlFetchApp.fetch(`https://api.axie.uno/balance?token=${token}&amp;player=${normalizeAddress(player)}`);
+    const response = UrlFetchApp.fetch(`https://api.axie.uno/wallet?player=${normalizeAddress(player)}`);
     const data = JSON.parse(response.getContentText());
-    return data.balance;
+    return data.balances[token].balance;
 }
 
 /**
@@ -419,7 +420,7 @@ function getAXSPrice(currency = "usd") {
     return priceData.AXS;
 }
 
-/**
+/**a
  * Returns the current RON / USD price.
  * @param {string} currency The currency to check. Defaults to usd. Must be supported by CoinGecko
  * @return USD Price
@@ -481,13 +482,13 @@ function getEstimatedAPR(pool) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="out/index.html#estimateDailyRewards">estimateDailyRewards</a></li><li><a href="out/index.html#estimateMyDailyRewards">estimateMyDailyRewards</a></li><li><a href="out/index.html#getAXSPrice">getAXSPrice</a></li><li><a href="out/index.html#getAXSUSDValue">getAXSUSDValue</a></li><li><a href="out/index.html#getBalance">getBalance</a></li><li><a href="out/index.html#getEstimatedAPR">getEstimatedAPR</a></li><li><a href="out/index.html#getLastClaimTimestamp">getLastClaimTimestamp</a></li><li><a href="out/index.html#getMyStake">getMyStake</a></li><li><a href="out/index.html#getNextClaimTimestamp">getNextClaimTimestamp</a></li><li><a href="out/index.html#getPool">getPool</a></li><li><a href="out/index.html#getPoolData">getPoolData</a></li><li><a href="out/index.html#getPriceData">getPriceData</a></li><li><a href="out/index.html#getRewardInfo">getRewardInfo</a></li><li><a href="out/index.html#getRewardPending">getRewardPending</a></li><li><a href="out/index.html#getRewardPool">getRewardPool</a></li><li><a href="out/index.html#getRewardTokenAddress">getRewardTokenAddress</a></li><li><a href="out/index.html#getRewardTokenName">getRewardTokenName</a></li><li><a href="out/index.html#getRewardTokenSymbol">getRewardTokenSymbol</a></li><li><a href="out/index.html#getRoninPrice">getRoninPrice</a></li><li><a href="out/index.html#getSecondsSinceLastClaim">getSecondsSinceLastClaim</a></li><li><a href="out/index.html#getSecondsUntilNextClaim">getSecondsUntilNextClaim</a></li><li><a href="out/index.html#getSLPPrice">getSLPPrice</a></li><li><a href="out/index.html#getSLPUSDValue">getSLPUSDValue</a></li><li><a href="out/index.html#getStakingTokenAddress">getStakingTokenAddress</a></li><li><a href="out/index.html#getStakingTokenName">getStakingTokenName</a></li><li><a href="out/index.html#getStakingTokenSymbol">getStakingTokenSymbol</a></li><li><a href="out/index.html#getTotalRewardsCredited">getTotalRewardsCredited</a></li><li><a href="out/index.html#getTotalRewardsDebited">getTotalRewardsDebited</a></li><li><a href="out/index.html#getTotalStake">getTotalStake</a></li><li><a href="out/index.html#normalizeAddress">normalizeAddress</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="index.html#estimateDailyRewards">estimateDailyRewards</a></li><li><a href="index.html#estimateMyDailyRewards">estimateMyDailyRewards</a></li><li><a href="index.html#getAXSPrice">getAXSPrice</a></li><li><a href="index.html#getAXSUSDValue">getAXSUSDValue</a></li><li><a href="index.html#getBalance">getBalance</a></li><li><a href="index.html#getEstimatedAPR">getEstimatedAPR</a></li><li><a href="index.html#getLastClaimTimestamp">getLastClaimTimestamp</a></li><li><a href="index.html#getMyStake">getMyStake</a></li><li><a href="index.html#getNextClaimTimestamp">getNextClaimTimestamp</a></li><li><a href="index.html#getPool">getPool</a></li><li><a href="index.html#getPoolData">getPoolData</a></li><li><a href="index.html#getPriceData">getPriceData</a></li><li><a href="index.html#getRewardInfo">getRewardInfo</a></li><li><a href="index.html#getRewardPending">getRewardPending</a></li><li><a href="index.html#getRewardPool">getRewardPool</a></li><li><a href="index.html#getRewardTokenAddress">getRewardTokenAddress</a></li><li><a href="index.html#getRewardTokenName">getRewardTokenName</a></li><li><a href="index.html#getRewardTokenSymbol">getRewardTokenSymbol</a></li><li><a href="index.html#getRoninPrice">getRoninPrice</a></li><li><a href="index.html#getSecondsSinceLastClaim">getSecondsSinceLastClaim</a></li><li><a href="index.html#getSecondsUntilNextClaim">getSecondsUntilNextClaim</a></li><li><a href="index.html#getSLPPrice">getSLPPrice</a></li><li><a href="index.html#getSLPUSDValue">getSLPUSDValue</a></li><li><a href="index.html#getStakingTokenAddress">getStakingTokenAddress</a></li><li><a href="index.html#getStakingTokenName">getStakingTokenName</a></li><li><a href="index.html#getStakingTokenSymbol">getStakingTokenSymbol</a></li><li><a href="index.html#getTotalRewardsCredited">getTotalRewardsCredited</a></li><li><a href="index.html#getTotalRewardsDebited">getTotalRewardsDebited</a></li><li><a href="index.html#getTotalStake">getTotalStake</a></li><li><a href="index.html#normalizeAddress">normalizeAddress</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Thu Jan 27 2022 17:55:08 GMT+0100 (Mitteleuropäische Normalzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Thu Feb 03 2022 17:29:43 GMT+0100 (Mitteleuropäische Normalzeit)
 </footer>
 
 <script> prettyPrint(); </script>

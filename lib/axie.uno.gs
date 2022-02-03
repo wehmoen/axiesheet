@@ -1,11 +1,12 @@
 const AVAILABLE_POOLS = [
     "AXS",
     "AXS-WETH",
-    "SLP-WETH"
+    "SLP-WETH",
+    "RON-WETH"
 ]
 
 const AVAILABLE_TOKEN = [
-    "AXS", "SLP", "WETH", "AXS-WETH", "SLP-WETH", "WRON", "RON"
+    "AXS", "SLP", "WETH", "AXS-WETH", "SLP-WETH", "WRON", "RON","RON-WETH"
 ]
 
 const SUPPORTED_CURRENCIES = [
@@ -83,7 +84,7 @@ function normalizeAddress(address) {
  * Returns reward infos for a player and a staking pool
  */
 function getRewardInfo(player, pool) {
-  if (AVAILABLE_POOLS.includes(pool) === false) {
+    if (AVAILABLE_POOLS.includes(pool) === false) {
         throw new Error(`Invalid Pool: ${pool} - Valid pools include: ${AVAILABLE_POOLS.join(",")}`);
     }
 
@@ -113,8 +114,8 @@ function formatSeconds(seconds)  {
  * @customfunction
  */
 function getTotalRewardsCredited(player, pool) {
-  const rewardInfo = getRewardInfo(player, pool);
-  return parseFloat(rewardInfo.totalRewardsCredited)
+    const rewardInfo = getRewardInfo(player, pool);
+    return parseFloat(rewardInfo.totalRewardsCredited)
 }
 
 /**
@@ -127,7 +128,7 @@ function getTotalRewardsCredited(player, pool) {
  */
 function getTotalRewardsDebited(player, pool) {
     const rewardInfo = getRewardInfo(player, pool);
-  return parseFloat(rewardInfo.totalRewardsDebited)
+    return parseFloat(rewardInfo.totalRewardsDebited)
 }
 
 /**
@@ -154,7 +155,7 @@ function getSecondsSinceLastClaim(player, pool, formated = false) {
  * @customfunction
  */
 function getSecondsUntilNextClaim(player, pool, formated = false) {
-  const rewardInfo = getRewardInfo(player, pool);
+    const rewardInfo = getRewardInfo(player, pool);
     return formated ? formatSeconds(rewardInfo.secondsUntilNextClaim) : rewardInfo.secondsUntilNextClaim
 }
 
@@ -167,8 +168,8 @@ function getSecondsUntilNextClaim(player, pool, formated = false) {
  * @customfunction
  */
 function getNextClaimTimestamp(player, pool) {
-  const rewardInfo = getRewardInfo(player, pool);
-  return new Date(parseInt(rewardInfo.nextClaimTimestamp) * 1000);
+    const rewardInfo = getRewardInfo(player, pool);
+    return new Date(parseInt(rewardInfo.nextClaimTimestamp) * 1000);
 }
 
 /**
@@ -180,8 +181,8 @@ function getNextClaimTimestamp(player, pool) {
  * @customfunction
  */
 function getLastClaimTimestamp(player, pool) {
-  const rewardInfo = getRewardInfo(player, pool);
-  return new Date(parseInt(rewardInfo.lastClaimTimestamp) * 1000);
+    const rewardInfo = getRewardInfo(player, pool);
+    return new Date(parseInt(rewardInfo.lastClaimTimestamp) * 1000);
 }
 
 
@@ -200,7 +201,7 @@ function getPriceData(currency = "usd") {
  *
  * @param {string} player The players ronin address
  * @param {string} token The token to query. Must be AXS, SLP, WETH, AXS-WETH, SLP-WETH, WRON or RON
- * @return Staking Pools
+ * @return Token Balance
  * @customfunction
  */
 function getBalance(player, token) {
@@ -208,9 +209,9 @@ function getBalance(player, token) {
         throw new Error(`Invalid Token: ${token} - Valid token include: ${AVAILABLE_TOKEN.join(",")}`);
     }
 
-    const response = UrlFetchApp.fetch(`https://api.axie.uno/balance?token=${token}&player=${normalizeAddress(player)}`);
+    const response = UrlFetchApp.fetch(`https://api.axie.uno/wallet?player=${normalizeAddress(player)}`);
     const data = JSON.parse(response.getContentText());
-    return data.balance;
+    return data.balances[token].balance;
 }
 
 /**
@@ -391,7 +392,7 @@ function getAXSPrice(currency = "usd") {
     return priceData.AXS;
 }
 
-/**
+/**a
  * Returns the current RON / USD price.
  * @param {string} currency The currency to check. Defaults to usd. Must be supported by CoinGecko
  * @return USD Price
